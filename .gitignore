@@ -1,0 +1,19 @@
+# Gradle / 构建
+.gradle/
+.gradle-home/
+.kotlin/
+build/
+plugin/build/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# 本地验证产物（部署脚本、截图、日志）
+.verify/
+*.log
+
+# 系统
+.DS_Store
+Thumbs.db

@@ -1,0 +1,12 @@
+feat: 视频壁纸 1.0.0
+
+给 Salt Player for Windows 的壁纸功能加上视频支持。
+
+- 注入壁纸渲染层：在宿主 Wallpaper(modifier) 之后追加全窗绘制层，
+  与图片壁纸同级重叠、位于所有界面内容之下
+- 注入壁纸设置面板：Column 末尾追加「视频壁纸」卡片
+- FFmpeg(JavaCPP 7.1.1) 解码 → BGRA → Skia → Compose Canvas，
+  按帧 PTS 推进，落后丢帧不漂移
+- 两种来源：单文件循环；文件夹随机池，窗口从最小化还原时换片
+- 暂停/继续、换一个、移除，配置持久化，中文路径按 UTF-8 读写
+- 运行期自检：last-start.txt + video-wallpaper.log

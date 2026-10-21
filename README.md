@@ -40,7 +40,7 @@
 
 ## 安装
 
-1. 从 [Releases](../../releases) 下载 `plugin-com.videowallpaper.spw-1.0.0.spmod`。
+1. 从 [Releases](https://github.com/azkbzxf/spw-video-wallpaper/releases) 下载 `plugin-com.videowallpaper.spw-1.0.0.spmod`。
 2. 打开 SPW → 设置 → **插件 / Workshop** → 「从文件安装」，选择该文件。
 3. 在插件列表里给「视频壁纸」**授予 `class-transform` 权限**（权限逐项确认；不授予只能加载、无法注入 UI）。
 4. 重启 SPW。

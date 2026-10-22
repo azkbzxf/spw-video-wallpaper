@@ -31,6 +31,7 @@ class MainPlugin(pluginContext: PluginContext) : SpwPlugin(pluginContext) {
         dir?.let {
             VwLog.init(it)
             VwConfig.init(it)
+            VwConfig.pluginId = pluginContext.pluginId
         }
 
         VwLog.line("==== start ==== spw=${pluginContext.spwVersion} plugin=${pluginContext.pluginVersion}")

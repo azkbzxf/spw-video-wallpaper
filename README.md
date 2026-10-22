@@ -8,6 +8,20 @@
 
 ---
 
+## 两个版本，装一个就行
+
+功能完全一样，区别只在「视频解码器从哪来」：
+
+| | **完整版**（FFmpeg） | **Lite 版** |
+|---|---|---|
+| 下载包 | `-ffmpeg.spmod` · **28 MB** | `-lite.spmod` · **约 1 MB** |
+| 额外依赖 | 无，装上就能用 | 需要先装 **SPW Media Runtime** |
+| 适合谁 | 只想装一个插件的人 | 已经装了 Runtime，或想省空间的人 |
+
+两个版本的插件 ID 相同，**不要同时安装**，装了新的先卸载旧的。
+
+---
+
 ## 能做什么
 
 - **视频当壁纸**：选一段 MP4 / MKV / WebM，直接铺满窗口，不拉伸不变形
@@ -21,11 +35,26 @@
 
 ## 安装
 
-1. 到 [Releases](https://github.com/azkbzxf/spw-video-wallpaper/releases) 下载 `plugin-com.videowallpaper.spw-1.0.0.spmod`
+### 完整版（推荐）
+
+1. 到 [Releases](https://github.com/azkbzxf/spw-video-wallpaper/releases) 下载 `spw-video-wallpaper-1.1.0-ffmpeg.spmod`
 2. 打开 Salt Player → 设置 → **插件 / Workshop** → 从文件安装
 3. 在插件列表里给「视频壁纸」**允许 `class-transform` 权限**
    （不允许的话插件能装上，但界面上不会出现任何东西）
 4. 重启 Salt Player
+
+### Lite 版
+
+Lite 版自己不带解码器，要用 [SPW Media Runtime](https://github.com/GaBoron/SPW-Media-Runtime)
+提供的共享 FFmpeg / libmpv。所以：
+
+1. 先装并启用 **SPW Media Runtime**（从它的 [Releases](https://github.com/GaBoron/SPW-Media-Runtime/releases) 下载，同样走「从文件安装」）
+2. 再装 `spw-video-wallpaper-1.1.0-lite.spmod`
+3. 两个插件都要给 `class-transform` 权限
+4. 重启 Salt Player
+
+> 顺序很重要：**Runtime 必须先装好并启用**，否则 Lite 版会在壁纸页提示「未检测到 SPW Media Runtime」。
+> Runtime 装好后如果先开了播放器，可以点面板上的「重新连接」重试，或重启一次。
 
 ---
 
@@ -64,10 +93,10 @@ speed=1.0     # 播放速度，1.0 = 原速
 paused=true   # 想让壁纸停在第一帧就改成 true
 ```
 
-文件位置（Microsoft Store 版）：
+文件位置（Microsoft Store 版，目录名里的版本号以你装的为准）：
 
 ```
-%APPDATA%\Salt Player for Windows\workshop\plugins\plugin-com.videowallpaper.spw-1.0.0\
+%APPDATA%\Salt Player for Windows\workshop\plugins\plugin-com.videowallpaper.spw-1.1.0\
 ```
 
 ---
@@ -77,6 +106,10 @@ paused=true   # 想让壁纸停在第一帧就改成 true
 **壁纸页里没有「视频壁纸」这一块？**
 八成是权限没给。去 设置 → 插件 / Workshop，给「视频壁纸」勾上 `class-transform`，然后重启。
 
+**（Lite 版）提示「未检测到 SPW Media Runtime」？**
+Lite 版自己不带解码器，必须先装 [SPW Media Runtime](https://github.com/GaBoron/SPW-Media-Runtime)
+并在插件列表里启用它。装好后重启一次 Salt Player。
+
 **选了视频，窗口是黑的？**
 先确认文件能用别的播放器打开。少数特殊编码解不了，换一个 MP4 试试。
 详细原因会写在插件目录的 `video-wallpaper.log` 里。
@@ -84,6 +117,10 @@ paused=true   # 想让壁纸停在第一帧就改成 true
 **最小化了也打开过，但没换片？**
 要真的**最小化**（点窗口右上角的最小化按钮），只是切到别的窗口再切回来不算。
 另外文件夹里至少要有两个视频。
+
+**Lite 版比完整版画质差一点？**
+Lite 版走 Runtime 的软件帧（长边控制在 1280 以内再缩放铺满），在超大窗口或 4K 屏上会比完整版软一点。
+日常 1080p 窗口基本看不出区别。
 
 **想换回图片壁纸？**
 面板里点 **移除**，或者用上面的「选择壁纸图片」重新选一张图。
@@ -98,8 +135,11 @@ paused=true   # 想让壁纸停在第一帧就改成 true
 只针对 **Salt Player for Windows 1.19.0** 做过适配。宿主换版本后插件可能失效，
 但不会影响播放器本身 —— 顶多是壁纸区域什么都不显示。
 
+Lite 版另外要求 **SPW Media Runtime 0.2.0**（Runtime 升级大版本时可能需要跟着更新）。
+
 ---
 
 ## 关于
 
-MIT License。实现细节、构建方法、适配新版本宿主需要改哪里，都写在 [docs/TECH.md](docs/TECH.md)。
+MIT License。实现细节、两个版本的技术差异、构建方法、适配新版本宿主需要改哪里，
+都写在 [docs/TECH.md](docs/TECH.md)。

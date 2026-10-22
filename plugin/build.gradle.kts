@@ -10,6 +10,10 @@ plugins {
 
 kotlin {
     jvmToolchain(25)
+    sourceSets.main {
+        // 与 lite 版共用同一份 UI / hook / 配置代码；本模块额外提供 FFmpeg 解码后端
+        kotlin.srcDirs("src/main/kotlin", "src/ffmpeg/kotlin")
+    }
 }
 
 dependencies {
@@ -33,10 +37,10 @@ dependencies {
 spmod {
     PluginClass = "com.videowallpaper.MainPlugin"
     PluginId = "com.videowallpaper.spw"
-    PluginVersion = "1.0.0"
+    PluginVersion = "1.1.0"
     PluginProvider = "video-wallpaper contributors"
-    PluginName = "视频壁纸"
-    PluginDescription = "让壁纸支持导入视频并实时循环播放"
+    PluginName = "视频壁纸（FFmpeg）"
+    PluginDescription = "让壁纸支持导入视频并实时循环播放；自带 FFmpeg，装了就能用"
     PluginOpenSourceUrl = ""
     PluginHasConfig = false
     // CLASS_TRANSFORM：Hook 壁纸渲染组件与壁纸设置面板（最高危权限）

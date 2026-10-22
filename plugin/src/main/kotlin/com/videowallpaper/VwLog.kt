@@ -67,6 +67,9 @@ object VwConfig {
     @Volatile var enabled: Boolean = true
         private set
 
+    /** 宿主分配的插件 ID（lite 版要用它去连 SPW Media Runtime） */
+    @Volatile var pluginId: String = "com.videowallpaper.spw"
+
     /** 来源模式：file = 单文件循环，folder = 文件夹随机轮播 */
     @Volatile var sourceMode: SourceMode = SourceMode.FILE
         private set

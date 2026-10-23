@@ -13,40 +13,6 @@ import org.jetbrains.skia.ColorType
 import org.jetbrains.skia.Image
 import org.jetbrains.skia.ImageInfo
 
-enum class PlayState { Idle, Loading, Playing, Paused, Error }
-
-/** 壁纸来源：单文件循环 / 文件夹随机轮播 */
-enum class SourceMode { FILE, FOLDER }
-
-/** 认得的视频扩展名（其余一律当作图片壁纸，不抢） */
-private val VIDEO_EXTS = setOf(
-    "mp4", "m4v", "mov", "mkv", "webm", "avi", "flv", "wmv",
-    "ts", "m2ts", "mts", "mpg", "mpeg", "3gp", "ogv",
-)
-
-fun isVideoPath(path: String): Boolean =
-    path.substringAfterLast('.', "").lowercase() in VIDEO_EXTS
-
-data class WallpaperStatus(
-    val path: String = "",
-    val state: PlayState = PlayState.Idle,
-    val width: Int = 0,
-    val height: Int = 0,
-    val fps: Double = 0.0,
-    val durationSec: Double = 0.0,
-    val error: String? = null,
-    val mode: SourceMode = SourceMode.FILE,
-    val folder: String = "",
-    /** 当前是这一轮里的第几个（1-based）；单文件模式恒为 1 */
-    val index: Int = 0,
-    /** 这一轮一共有几个视频片段 */
-    val total: Int = 0,
-    /** 累计播放过的片段数（切歌计数，用于日志与「下一个」） */
-    val played: Int = 0,
-) {
-    val isPlaylist: Boolean get() = mode == SourceMode.FOLDER && total > 1
-}
-
 /**
  * 壁纸播放引擎：一条后台解码线程 + 一个 Compose 状态（当前帧）。
  *

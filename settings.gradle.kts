@@ -28,3 +28,5 @@ dependencyResolutionManagement {
 rootProject.name = "spw-video-wallpaper"
 
 include("plugin")
+// 精简版：不带 FFmpeg，改用 SPW Media Runtime 解码
+include("plugin-lite")

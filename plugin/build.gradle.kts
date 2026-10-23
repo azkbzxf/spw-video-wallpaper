@@ -10,6 +10,10 @@ plugins {
 
 kotlin {
     jvmToolchain(25)
+    sourceSets.main {
+        // 与 lite 版共用同一份 UI / hook / 配置代码；本模块额外提供 FFmpeg 解码后端
+        kotlin.srcDirs("src/main/kotlin", "src/ffmpeg/kotlin")
+    }
 }
 
 dependencies {

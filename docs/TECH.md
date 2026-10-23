@@ -4,7 +4,55 @@
 
 - 目标宿主：**SPW 1.19.x**（Workshop API `0.1.0-dev23`），已在 1.19.0 与 1.19.2 上实测
 - 权限：`class-transform`
-- 插件 ID：`com.videowallpaper.spw`
+- 插件 ID：`com.videowallpaper.spw`（完整版与 Lite 版同 ID，不能同时安装）
+
+---
+
+## 两个发行版怎么共存
+
+同一个 Gradle 工程，共享一套 UI / hook / 配置代码，只有 `VideoEngine`（解码后端）和依赖不同：
+
+```
+plugin/src/main/kotlin/com/videowallpaper/          共享：hook、设置面板、渲染层、配置、窗口监听
+plugin/src/ffmpeg/kotlin/com/videowallpaper/video/  完整版：VideoDecoder(FFmpeg) + VideoEngine
+plugin-lite/src/main/kotlin/com/videowallpaper/video/  Lite 版：VideoEngine(Media Runtime)
+```
+
+- `plugin` 的 `sourceSets` = `src/main/kotlin` + `src/ffmpeg/kotlin`
+- `plugin-lite` 的 `sourceSets` = `../plugin/src/main/kotlin` + `src/main/kotlin`
+
+两边都提供同名 `com.videowallpaper.video.VideoEngine`，对外 API 完全一致
+（`status` / `frame` / `start` / `startPlaylist` / `stop` / `pause` / `next` / `isVideoFile`），
+所以 `MainPlugin`、`VideoWallpaperSection`、`VideoWallpaperLayer`、`WindowRestoreWatcher` 一行都不用改。
+`PlayState` / `SourceMode` / `WallpaperStatus` / `isVideoPath` 放在共享的 `video/WallpaperStatus.kt`。
+
+### Lite 版的后端
+
+依赖 [SPW Media Runtime](https://github.com/GaBoron/SPW-Media-Runtime) 的 SDK
+（`io.github.gaboron.spwmedia:spw-media-sdk:0.2.0`，约 250 KB）：
+
+```kotlin
+val conn = MediaRuntime.connectWhenAvailable(pluginId, ConnectionOptions()) { CompletableFuture.completedFuture(null) }
+val rt   = conn.current                                  // 连接有效时非空
+val task = rt.playback.open(PlayerOptions(
+    options = mapOf("audio" to "no", "loop-file" to "inf"),
+    frameWidth = w, frameHeight = h,
+))
+val player = task.result.toCompletableFuture().get(20, TimeUnit.SECONDS)
+player.load(path).toCompletableFuture().get(15, TimeUnit.SECONDS)
+val buffer = player.frames()                             // SharedBuffer，BGRA
+val frame  = buffer.latest()                             // MediaBuffer(bytes, width, height, sequence)
+```
+
+- 输出尺寸按视频原始比例算，长边压到 1280 以内（Runtime 是软件渲染 + CPU 上传，全尺寸很吃 CPU）；
+  换片时比例变了才重建播放器，否则直接 `load` 复用；
+- 帧用 15 ms 轮询搬进 Compose 状态，渲染层只认 `ImageBitmap`，与完整版同一条绘制路径；
+- 关闭顺序按 Runtime 约定：先停渲染 → 关 `SharedBuffer` → 关 `Player`。
+
+**已知环境限制**：Runtime 的播放后端是独立子进程，要用 `LoadLibraryEx` 加载宿主的
+`java.home/bin/server/jvm.dll`。Microsoft Store 版宿主装在 `C:\Program Files\WindowsApps\`，
+该目录的 DLL 不允许包外进程加载（实测 `ERROR_ACCESS_DENIED`），后端会立即退出、
+报 `BACKEND_EXITED`。Steam 版 / 便携版没有这个限制。
 
 ---
 
@@ -98,11 +146,14 @@ Compose Canvas.drawImage（Crop） + 暗化遮罩
 ```bash
 cd spw-video-wallpaper
 build.bat            # Windows：用项目内 GRADLE_USER_HOME 打包
-# 或手动
-GRADLE_USER_HOME=$(pwd)/.gradle-home gradle --no-daemon :plugin:plugin
+# 或手动（两个发行版一起出）
+GRADLE_USER_HOME=$(pwd)/.gradle-home gradle --no-daemon :plugin:plugin :plugin-lite:plugin
 ```
 
-产物：`plugin/build/libs/plugin-com.videowallpaper.spw-1.0.1.spmod`
+产物：
+
+- 完整版 `plugin/build/libs/plugin-com.videowallpaper.spw-1.0.1.spmod`
+- Lite 版 `plugin-lite/build/libs/plugin-com.videowallpaper.spw-1.0.1-lite.spmod`
 
 本机踩过的三个坑（已写进 `gradle.properties` / `build.bat`）：
 

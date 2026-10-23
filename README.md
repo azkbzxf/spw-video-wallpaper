@@ -21,7 +21,7 @@
 
 ## 安装
 
-1. 到 [Releases](https://github.com/azkbzxf/spw-video-wallpaper/releases) 下载 `plugin-com.videowallpaper.spw-1.0.0.spmod`
+1. 到 [Releases](https://github.com/azkbzxf/spw-video-wallpaper/releases) 下载 `plugin-com.videowallpaper.spw-1.0.1.spmod`
 2. 打开 Salt Player → 设置 → **插件 / Workshop** → 从文件安装
 3. 在插件列表里给「视频壁纸」**允许 `class-transform` 权限**
    （不允许的话插件能装上，但界面上不会出现任何东西）
@@ -67,7 +67,7 @@ paused=true   # 想让壁纸停在第一帧就改成 true
 文件位置（Microsoft Store 版）：
 
 ```
-%APPDATA%\Salt Player for Windows\workshop\plugins\plugin-com.videowallpaper.spw-1.0.0\
+%APPDATA%\Salt Player for Windows\workshop\plugins\plugin-com.videowallpaper.spw-1.0.1\
 ```
 
 ---
@@ -95,8 +95,14 @@ paused=true   # 想让壁纸停在第一帧就改成 true
 
 ## 兼容性
 
-只针对 **Salt Player for Windows 1.19.0** 做过适配。宿主换版本后插件可能失效，
-但不会影响播放器本身 —— 顶多是壁纸区域什么都不显示。
+| Salt Player 版本 | 状态 |
+|---|---|
+| 1.19.0（Microsoft Store 版） | ✅ 实测可用 |
+| 1.19.2（Steam 版） | ✅ 实测可用 |
+
+宿主每个版本都会重新混淆类名，所以插件里内置了几组候选注入点，启动时自动挑能用的那组。
+以后宿主再更新、插件突然不生效了，也不会弄坏播放器 —— 只是壁纸区域不显示东西，
+插件目录的 `video-wallpaper.log` 里会写清楚「所有候选都不匹配」。
 
 ---
 

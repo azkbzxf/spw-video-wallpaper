@@ -67,6 +67,9 @@ object VwConfig {
     @Volatile var enabled: Boolean = true
         private set
 
+    /** 宿主版本 —— 混淆名各版本不同，排障时先看这个 */
+    @Volatile var spwVersion: String = "?"
+
     /** 来源模式：file = 单文件循环，folder = 文件夹随机轮播 */
     @Volatile var sourceMode: SourceMode = SourceMode.FILE
         private set

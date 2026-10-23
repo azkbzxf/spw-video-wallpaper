@@ -2,7 +2,7 @@
 
 面向想改代码或适配新版本宿主的人。普通使用请看 [README](../README.md)。
 
-- 目标宿主：**SPW 1.19.0**（Workshop API `0.1.0-dev23`）
+- 目标宿主：**SPW 1.19.x**（Workshop API `0.1.0-dev23`），已在 1.19.0 与 1.19.2 上实测
 - 权限：`class-transform`
 - 插件 ID：`com.videowallpaper.spw`
 
@@ -10,15 +10,20 @@
 
 ## 两个注入点
 
-宿主是 Compose Multiplatform 应用，1.19.0 的类名经过 R8 混淆，只能按「被调用的 composable + 调用点所在类」定位，
+宿主是 Compose Multiplatform 应用，类名经过 R8 混淆，只能按「被调用的 composable + 调用点所在类」定位，
 并要求调用点在目标类里**唯一**，否则宿主会抛 `UI call missing or ambiguous`。
+
+> **混淆名每个版本都可能变。** 1.19.0 → 1.19.2 就把 `Wallpaper` 从 `ϰ`(U+03F0) 改成了 `ύ`(U+03CD)、
+> 调用点从 `Պ`(U+054A) 改成了 `ѐ`(U+0450)。所以 `Hooks.kt` 里每个注入点都是一组 `UiPoint` 候选，
+> 注册时逐个试，第一个成功的生效；宿主再换名字时只需往列表里补一条。
 
 **① 壁纸渲染层**（`Wallpaper.desktop.kt:26`）
 
 ```kotlin
-// androidx.compose.ui.Պ (U+054A = MainWindowContentKt)
+// 1.19.2: androidx.compose.ui.ѐ (U+0450)     1.19.0: androidx.compose.ui.Պ (U+054A)
 AnimatedVisibility(visible = wallpaperFilePath.isNotEmpty(), fadeIn(1000), fadeOut(1000)) {
-    Wallpaper(Modifier)      // androidx.compose.ui.ϰ (U+03F0) —— 全类唯一调用点
+    // 1.19.2: androidx.compose.ui.ύ (U+03CD)   1.19.0: androidx.compose.ui.ϰ (U+03F0)
+    Wallpaper(Modifier)      // 两版都在类内唯一调用（两版偏移都是 offset 57）
 }
 ```
 
@@ -28,7 +33,7 @@ AnimatedVisibility(visible = wallpaperFilePath.isNotEmpty(), fadeIn(1000), fadeO
 **② 壁纸设置面板**（`WallpaperFilePanel.desktop.kt:73`）
 
 ```kotlin
-// com.xuncorp.voxzen.ui.screen.appearance.ރ (U+0783)
+// com.xuncorp.voxzen.ui.screen.appearance.ރ (U+0783) —— 1.19.0 / 1.19.2 相同
 Column {
     ...选择壁纸图片 / 壁纸材质 / 删除壁纸 / 说明文字
     ࠤ(U+0824).Ϳ(String, ࠨ(U+0828), Modifier, ...)   // 说明文字，同签名全类唯一
@@ -39,6 +44,14 @@ Column {
 
 > 方法名 `Ϳ` 是 **U+037F**（希腊问号），不是 U+047F。写错时宿主会报
 > `UI call missing or ambiguous … (0 calls)` —— 候选方法列表为空，而不是「签名不符」。
+
+### 适配新宿主版本的做法
+
+1. 从宿主安装目录的 `app/ffmpeg-x64.dll`（polyglot jar，`zipfile` 可读）里找包含
+   `Wallpaper.desktop.kt` / `WallpaperFilePanel.desktop.kt` 字符串的 class，那就是新类名；
+2. 在所有 class 里搜同时含该类名和 `(Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;II)V`
+   的那些，挑出「对它只有一处调用」的类作为调用点；
+3. 把新的 `UiPoint` 加到 `Hooks.kt` 候选列表**最前面**，重新打包。
 
 ## 解码管线
 
@@ -89,7 +102,7 @@ build.bat            # Windows：用项目内 GRADLE_USER_HOME 打包
 GRADLE_USER_HOME=$(pwd)/.gradle-home gradle --no-daemon :plugin:plugin
 ```
 
-产物：`plugin/build/libs/plugin-com.videowallpaper.spw-1.0.0.spmod`
+产物：`plugin/build/libs/plugin-com.videowallpaper.spw-1.0.1.spmod`
 
 本机踩过的三个坑（已写进 `gradle.properties` / `build.bat`）：
 

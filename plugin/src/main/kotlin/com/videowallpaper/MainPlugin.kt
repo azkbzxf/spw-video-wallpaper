@@ -53,15 +53,25 @@ class MainPlugin(pluginContext: PluginContext) : SpwPlugin(pluginContext) {
 
         writeStatus(wallpaperOk, panelOk)
 
-        val msg = when {
-            wallpaperOk && panelOk -> "视频壁纸已就绪：外观 → 壁纸 → 视频壁纸"
-            else -> "视频壁纸：注入未完成，已转后台重试（详见插件目录 last-start.txt）"
-        }
-        runCatching {
-            WorkshopApi.ui.toast(
-                msg,
-                if (wallpaperOk && panelOk) WorkshopApi.Ui.ToastType.Success else WorkshopApi.Ui.ToastType.Warning,
-            )
+        // 提示策略：正常挂载只在**首次安装**时提示一次，之后每次启动都安静；
+        // 注入失败则每次都提示（异常状态需要被看到）。
+        if (wallpaperOk && panelOk) {
+            if (!VwConfig.welcomed) {
+                runCatching {
+                    WorkshopApi.ui.toast(
+                        "视频壁纸已就绪：外观 → 壁纸 → 视频壁纸",
+                        WorkshopApi.Ui.ToastType.Success,
+                    )
+                }
+                VwConfig.markWelcomed()
+            }
+        } else {
+            runCatching {
+                WorkshopApi.ui.toast(
+                    "视频壁纸：注入未完成，已转后台重试（详见插件目录 last-start.txt）",
+                    WorkshopApi.Ui.ToastType.Warning,
+                )
+            }
         }
         if (!wallpaperOk || !panelOk) {
             // hook 失败：15 秒后再写一次最终状态（后台重试可能已经成功）

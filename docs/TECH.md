@@ -152,8 +152,8 @@ GRADLE_USER_HOME=$(pwd)/.gradle-home gradle --no-daemon :plugin:plugin :plugin-l
 
 产物：
 
-- 完整版 `plugin/build/libs/plugin-com.videowallpaper.spw-1.0.1.spmod`
-- Lite 版 `plugin-lite/build/libs/plugin-com.videowallpaper.spw-1.0.1-lite.spmod`
+- 完整版 `plugin/build/libs/plugin-com.videowallpaper.spw-1.0.2.spmod`
+- Lite 版 `plugin-lite/build/libs/plugin-com.videowallpaper.spw-1.0.2-lite.spmod`
 
 本机踩过的三个坑（已写进 `gradle.properties` / `build.bat`）：
 

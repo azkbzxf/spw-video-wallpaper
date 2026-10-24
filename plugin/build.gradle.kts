@@ -37,7 +37,7 @@ dependencies {
 spmod {
     PluginClass = "com.videowallpaper.MainPlugin"
     PluginId = "com.videowallpaper.spw"
-    PluginVersion = "1.0.1"
+    PluginVersion = "1.0.2"
     PluginProvider = "video-wallpaper contributors"
     PluginName = "视频壁纸"
     PluginDescription = "让壁纸支持导入视频并实时循环播放"

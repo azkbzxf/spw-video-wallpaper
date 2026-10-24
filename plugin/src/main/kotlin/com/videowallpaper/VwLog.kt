@@ -97,6 +97,10 @@ object VwConfig {
     @Volatile var posterPath: String = ""
         private set
 
+    /** 是否已经弹过「已就绪」提示 —— 只在首次安装后弹一次，之后每次启动都安静 */
+    @Volatile var welcomed: Boolean = false
+        private set
+
     fun init(dir: File) {
         try {
             dir.mkdirs()
@@ -119,6 +123,9 @@ object VwConfig {
             speed = props.getProperty("speed", "1.0").toFloatOrNull()?.coerceIn(0.1f, 3f) ?: 1f
             dim = props.getProperty("dim", "0.18").toFloatOrNull()?.coerceIn(0f, 0.8f) ?: 0.18f
             posterPath = props.getProperty("posterPath", "") ?: ""
+            // 老用户升级上来时配置文件里已经有内容，说明不是「首次安装」，别再来一次提示
+            val usedBefore = videoPath.isNotBlank() || folderPath.isNotBlank()
+            welcomed = props.getProperty("welcomed", "false").toBoolean() || usedBefore
         } catch (t: Throwable) {
             VwLog.failure("读取配置失败", t)
         }
@@ -135,6 +142,7 @@ object VwConfig {
             props.setProperty("speed", speed.toString())
             props.setProperty("dim", dim.toString())
             props.setProperty("posterPath", posterPath)
+            props.setProperty("welcomed", welcomed.toString())
             val tmp = File(f.parentFile, f.name + ".tmp")
             f.parentFile?.mkdirs()
             // 写出同样用 UTF-8，保证中文路径能原样读回
@@ -193,6 +201,13 @@ object VwConfig {
 
     fun setPoster(path: String) {
         posterPath = path
+        persist()
+    }
+
+    /** 记下「已经提示过一次」，之后启动不再打扰 */
+    fun markWelcomed() {
+        if (welcomed) return
+        welcomed = true
         persist()
     }
 }

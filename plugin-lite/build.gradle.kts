@@ -35,8 +35,8 @@ dependencies {
 tasks.named("plugin") {
     doLast {
         val dir = layout.buildDirectory.dir("libs").get().asFile
-        val src = dir.resolve("plugin-com.videowallpaper.spw-1.0.1.spmod")
-        val dst = dir.resolve("plugin-com.videowallpaper.spw-1.0.1-lite.spmod")
+        val src = dir.resolve("plugin-com.videowallpaper.spw-1.0.2.spmod")
+        val dst = dir.resolve("plugin-com.videowallpaper.spw-1.0.2-lite.spmod")
         if (src.isFile) {
             if (dst.exists()) dst.delete()
             src.renameTo(dst)
@@ -47,7 +47,7 @@ tasks.named("plugin") {
 spmod {
     PluginClass = "com.videowallpaper.MainPlugin"
     PluginId = "com.videowallpaper.spw"
-    PluginVersion = "1.0.1"
+    PluginVersion = "1.0.2"
     PluginProvider = "video-wallpaper contributors"
     PluginName = "视频壁纸 Lite"
     PluginDescription = "视频壁纸的精简版：体积小，需要先安装并启用 SPW Media Runtime"

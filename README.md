@@ -47,7 +47,7 @@
 
 ### 完整版
 
-1. 到 [Releases](https://github.com/azkbzxf/spw-video-wallpaper/releases) 下载 `spw-video-wallpaper-1.0.1-ffmpeg.spmod`
+1. 到 [Releases](https://github.com/azkbzxf/spw-video-wallpaper/releases) 下载 `spw-video-wallpaper-1.0.2-ffmpeg.spmod`
 2. 打开 Salt Player → 设置 → **插件 / Workshop** → 从文件安装
 3. 在插件列表里给「视频壁纸」**允许 `class-transform` 权限**
    （不允许的话插件能装上，但界面上不会出现任何东西）
@@ -57,7 +57,7 @@
 
 1. 先装 **SPW Media Runtime 0.2.0+**（从它的 [Releases](https://github.com/GaBoron/SPW-Media-Runtime/releases) 下载，同样「从文件安装」），
    并在插件列表里**启用**它
-2. 再装 `spw-video-wallpaper-1.0.1-lite.spmod`
+2. 再装 `spw-video-wallpaper-1.0.2-lite.spmod`
 3. 两个插件都要给 `class-transform` 权限
 4. 重启 Salt Player
 
@@ -104,7 +104,7 @@ paused=true   # 想让壁纸停在第一帧就改成 true
 文件位置（Microsoft Store 版）：
 
 ```
-%APPDATA%\Salt Player for Windows\workshop\plugins\plugin-com.videowallpaper.spw-1.0.1\
+%APPDATA%\Salt Player for Windows\workshop\plugins\plugin-com.videowallpaper.spw-1.0.2\
 ```
 
 ---

@@ -165,4 +165,7 @@ Runtime 没装、没启用，或者版本太低时，Lite 版会在壁纸页直�
 
 ## 关于
 
-MIT License。实现细节、构建方法、适配新版本宿主需要改哪里，都写在 [docs/TECH.md](docs/TECH.md)。
+MIT License。
+
+- [docs/TECH.md](docs/TECH.md) —— 注入点、解码管线、两个发行版的结构
+- [docs/PLAYBOOK.md](docs/PLAYBOOK.md) —— 开发与发布手册：环境坑、构建、部署、宿主升级后怎么适配、发版流程、故障速查
